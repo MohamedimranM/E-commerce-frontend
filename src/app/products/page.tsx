@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -113,7 +113,7 @@ const PRICE_RANGES = [
 ];
 
 /* ── Main page ── */
-export default function ProductsPage() {
+function ProductsContent() {
   const searchParams = useSearchParams();
   const nameFromUrl = searchParams.get("name") || "";
 
@@ -307,5 +307,19 @@ export default function ProductsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-80 items-center justify-center">
+          <Loader2 size={36} className="animate-spin text-primary" />
+        </div>
+      }
+    >
+      <ProductsContent />
+    </Suspense>
   );
 }
