@@ -1,0 +1,88 @@
+export interface User {
+  id: string;
+  _id?: string;
+  name: string;
+  email: string;
+  role: "user" | "admin";
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface AuthResponse {
+  message: string;
+  user: User;
+  token: string;
+}
+
+export interface SignUpPayload {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export interface SignInPayload {
+  email: string;
+  password: string;
+}
+
+/* ── Product ── */
+
+export interface ProductImage {
+  url: string;
+  public_id: string;
+  _id?: string;
+}
+
+export interface Review {
+  _id: string;
+  user: string;
+  name: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Product {
+  _id: string;
+  id?: string;
+  user: { _id: string; name: string; email: string } | string;
+  name: string;
+  slug: string;
+  images: ProductImage[];
+  brand: string;
+  category: string;
+  description: string;
+  reviews: Review[];
+  rating: number;
+  numReviews: number;
+  price: number;
+  countInStock: number;
+  isFeatured: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProductsResponse {
+  success: boolean;
+  totalProducts: number;
+  products: Product[];
+}
+
+export interface ProductResponse {
+  success: boolean;
+  product: Product;
+}
+
+export interface CategoriesResponse {
+  success: boolean;
+  categories: string[];
+}
+
+export interface ProductFilters {
+  category?: string;
+  name?: string;
+  minPrice?: number;
+  maxPrice?: number;
+}
