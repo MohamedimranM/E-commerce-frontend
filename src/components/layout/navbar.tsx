@@ -11,6 +11,7 @@ import {
   X,
   Heart,
   Package,
+  ClipboardList,
   ChevronDown,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
@@ -79,6 +80,7 @@ export default function Navbar() {
 
   const navLinks = [
     { href: "/products", label: "Products", icon: Package },
+    { href: "/orders", label: "My Orders", icon: ClipboardList },
   ];
 
   return (

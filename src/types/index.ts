@@ -129,3 +129,64 @@ export interface BannersResponse {
   totalBanners: number;
   banners: Banner[];
 }
+
+/* ── Order ── */
+
+export type OrderStatus =
+  | "Pending"
+  | "Confirmed"
+  | "Shipped"
+  | "Delivered"
+  | "Cancelled";
+
+export interface OrderItem {
+  product: string;
+  name: string;
+  image: string;
+  price: number;
+  quantity: number;
+  _id: string;
+}
+
+export interface ShippingAddress {
+  fullName: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+}
+
+export interface Order {
+  _id: string;
+  user: { _id: string; name: string; email: string } | string;
+  orderItems: OrderItem[];
+  shippingAddress: ShippingAddress;
+  paymentMethod: "COD" | "Card" | "PayPal";
+  itemsPrice: number;
+  shippingPrice: number;
+  totalPrice: number;
+  status: OrderStatus;
+  isPaid: boolean;
+  paidAt?: string;
+  isDelivered: boolean;
+  deliveredAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OrderResponse {
+  success: boolean;
+  order: Order;
+}
+
+export interface OrdersResponse {
+  success: boolean;
+  orders: Order[];
+}
+
+export interface PlaceOrderPayload {
+  shippingAddress: ShippingAddress;
+  paymentMethod: "COD";
+}

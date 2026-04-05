@@ -215,7 +215,10 @@ export default function CartPage() {
               </div>
             </div>
 
-            <button className="cursor-pointer mt-5 w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-primary-dark hover:shadow-md">
+            <button
+              onClick={() => router.push("/checkout")}
+              className="cursor-pointer mt-5 w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-primary-dark hover:shadow-md"
+            >
               Proceed to Checkout
             </button>
           </div>
