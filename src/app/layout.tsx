@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "ShopHub — Your Favourite Store",
+  title: "Shopping Hub — Your Favourite Store",
   description: "Discover amazing products at great prices",
 };
 

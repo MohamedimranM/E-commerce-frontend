@@ -36,7 +36,7 @@ export default function SignInPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
               <ShoppingBag className="h-5 w-5" />
             </div>
-            <span className="text-xl font-bold">ShopHub</span>
+            <span className="text-xl font-bold">Shopping Hub</span>
           </div>
 
           <div className="space-y-6">
@@ -60,7 +60,7 @@ export default function SignInPage() {
             </motion.p>
           </div>
 
-          <p className="text-sm text-white/40">© 2026 ShopHub. All rights reserved.</p>
+          <p className="text-sm text-white/40">© 2026 Shopping Hub. All rights reserved.</p>
         </div>
       </div>
 
@@ -77,7 +77,7 @@ export default function SignInPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
               <ShoppingBag className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-dark">ShopHub</span>
+            <span className="text-xl font-bold text-dark">Shopping Hub</span>
           </div>
 
           <div className="mb-8">

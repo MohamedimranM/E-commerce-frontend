@@ -75,12 +75,14 @@ export default function Navbar() {
   const handleLogout = () => {
     setProfileOpen(false);
     store.dispatch(logout());
-    router.push("/signin");
+    router.push("/");
   };
 
   const navLinks = [
     { href: "/products", label: "Products", icon: Package },
-    { href: "/orders", label: "My Orders", icon: ClipboardList },
+    ...(user
+      ? [{ href: "/orders", label: "My Orders", icon: ClipboardList }]
+      : []),
   ];
 
   return (
