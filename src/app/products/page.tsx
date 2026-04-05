@@ -11,7 +11,7 @@ import type { Product, ProductFilters } from "@/types";
 
 /* ── helpers ── */
 const formatPrice = (n: number) =>
-  new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
+  new Intl.NumberFormat("en-AE", { style: "currency", currency: "AED", maximumFractionDigits: 0 }).format(n);
 
 function StarRating({ rating, size = 14 }: { rating: number; size?: number }) {
   return (
@@ -39,7 +39,7 @@ function ProductCard({ product }: { product: Product }) {
   const originalPrice = Math.round(product.price / (1 - discount / 100));
 
   return (
-    <Link href={`/products/${product._id}`}>
+    <Link href={`/products/${product.slug}`}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -105,11 +105,11 @@ function ProductCard({ product }: { product: Product }) {
 /* ── Sidebar filters ── */
 
 const PRICE_RANGES = [
-  { label: "Under ₹500", min: 0, max: 500 },
-  { label: "₹500 – ₹1,000", min: 500, max: 1000 },
-  { label: "₹1,000 – ₹5,000", min: 1000, max: 5000 },
-  { label: "₹5,000 – ₹20,000", min: 5000, max: 20000 },
-  { label: "Over ₹20,000", min: 20000, max: undefined },
+  { label: "Under AED 500", min: 0, max: 500 },
+  { label: "AED 500 – AED 1,000", min: 500, max: 1000 },
+  { label: "AED 1,000 – AED 5,000", min: 1000, max: 5000 },
+  { label: "AED 5,000 – AED 20,000", min: 5000, max: 20000 },
+  { label: "Over AED 20,000", min: 20000, max: undefined },
 ];
 
 /* ── Main page ── */

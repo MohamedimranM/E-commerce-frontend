@@ -18,14 +18,14 @@ import {
   Check,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useGetProductById } from "@/hooks/use-products";
+import { useGetProductBySlug } from "@/hooks/use-products";
 import type { Review } from "@/types";
 
 /* ── helpers ── */
 const formatPrice = (n: number) =>
-  new Intl.NumberFormat("en-IN", {
+  new Intl.NumberFormat("en-AE", {
     style: "currency",
-    currency: "INR",
+    currency: "AED",
     maximumFractionDigits: 0,
   }).format(n);
 
@@ -59,7 +59,7 @@ function ReviewCard({ review }: { review: Review }) {
           <div>
             <p className="text-sm font-semibold text-dark">{review.name}</p>
             <p className="text-[11px] text-gray-400">
-              {new Date(review.createdAt).toLocaleDateString("en-IN", {
+              {new Date(review.createdAt).toLocaleDateString("en-AE", {
                 day: "numeric",
                 month: "short",
                 year: "numeric",
@@ -83,9 +83,9 @@ function ReviewCard({ review }: { review: Review }) {
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const id = params.id as string;
+  const slug = params.slug as string;
 
-  const { data, isLoading } = useGetProductById(id);
+  const { data, isLoading } = useGetProductBySlug(slug);
   const product = data?.product;
 
   const [selectedImage, setSelectedImage] = useState(0);

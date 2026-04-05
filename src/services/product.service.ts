@@ -20,5 +20,5 @@ export const getProductsService = (filters?: ProductFilters) => {
   return _axios<ProductsResponse>("GET", `/products${query ? `?${query}` : ""}`);
 };
 
-export const getProductByIdService = (id: string) =>
-  _axios<ProductResponse>("GET", `/products/${id}`);
+export const getProductBySlugService = (slug: string) =>
+  _axios<ProductResponse>("GET", `/products/slug/${slug}`);

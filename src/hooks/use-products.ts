@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   getProductsService,
-  getProductByIdService,
+  getProductBySlugService,
   getCategoriesService,
 } from "@/services/product.service";
 import type { ProductFilters } from "@/types";
@@ -20,9 +20,9 @@ export const useGetProducts = (filters?: ProductFilters) =>
     queryFn: () => getProductsService(filters),
   });
 
-export const useGetProductById = (id: string) =>
+export const useGetProductBySlug = (slug: string) =>
   useQuery({
-    queryKey: ["product", id],
-    queryFn: () => getProductByIdService(id),
-    enabled: !!id,
+    queryKey: ["product", slug],
+    queryFn: () => getProductBySlugService(slug),
+    enabled: !!slug,
   });
