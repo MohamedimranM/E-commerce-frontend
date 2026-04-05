@@ -19,6 +19,9 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGetProductBySlug } from "@/hooks/use-products";
+import { useAddToCart } from "@/hooks/use-cart";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/store";
 import type { Review } from "@/types";
 
 /* ── helpers ── */
@@ -86,6 +89,8 @@ export default function ProductDetailPage() {
   const slug = params.slug as string;
 
   const { data, isLoading } = useGetProductBySlug(slug);
+  const addToCart = useAddToCart();
+  const isAuthenticated = useSelector((s: RootState) => s.auth.isAuthenticated);
   const product = data?.product;
 
   const [selectedImage, setSelectedImage] = useState(0);
@@ -307,11 +312,18 @@ export default function ProductDetailPage() {
           {/* Actions */}
           <div className="flex gap-3 pt-2">
             <button
-              disabled={!inStock}
+              disabled={!inStock || addToCart.isPending}
+              onClick={() => {
+                if (!isAuthenticated) {
+                  router.push("/signin");
+                  return;
+                }
+                addToCart.mutate({ productId: product._id, quantity: qty });
+              }}
               className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-primary-dark hover:shadow-md disabled:opacity-50"
             >
               <ShoppingCart size={18} />
-              Add to Cart
+              {addToCart.isPending ? "Adding..." : "Add to Cart"}
             </button>
             <button className="flex h-12.5 w-12.5 items-center justify-center rounded-xl border border-gray-200 text-gray-400 transition hover:border-red-200 hover:text-red-500">
               <Heart size={20} />

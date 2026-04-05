@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "@/store";
 import { store } from "@/store";
 import { logout } from "@/store/features/auth-slice";
+import { useGetCart } from "@/hooks/use-cart";
 
 export default function Navbar() {
   const router = useRouter();
@@ -24,6 +25,8 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
+  const { data: cartData } = useGetCart();
+  const cartCount = cartData?.cart?.products?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,9 +90,14 @@ export default function Navbar() {
                 <button className="relative rounded-lg p-2 transition hover:bg-white/10">
                   <Heart size={20} />
                 </button>
-                <button className="relative rounded-lg p-2 transition hover:bg-white/10">
+                <Link href="/cart" className="relative rounded-lg p-2 transition hover:bg-white/10">
                   <ShoppingCart size={20} />
-                </button>
+                  {cartCount > 0 && (
+                    <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white">
+                      {cartCount > 99 ? "99+" : cartCount}
+                    </span>
+                  )}
+                </Link>
 
                 {/* Profile dropdown */}
                 <div className="relative" ref={profileRef}>

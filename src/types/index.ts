@@ -86,3 +86,30 @@ export interface ProductFilters {
   minPrice?: number;
   maxPrice?: number;
 }
+
+/* ── Cart ── */
+
+export interface CartItem {
+  product: Product;
+  quantity: number;
+  _id: string;
+}
+
+export interface Cart {
+  _id: string;
+  user: string;
+  products: CartItem[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CartResponse {
+  success: boolean;
+  cart: Cart;
+}
+
+export interface CartRemoveResponse {
+  success: boolean;
+  cart?: Cart;
+  message?: string;
+}
