@@ -69,7 +69,7 @@ function CartItemRow({ item }: { item: CartItem }) {
         <button
           onClick={() => removeFromCart.mutate(product._id)}
           disabled={removeFromCart.isPending}
-          className="rounded-lg p-1.5 text-gray-400 transition hover:bg-red-50 hover:text-red-500"
+          className="cursor-pointer rounded-lg p-1.5 text-gray-400 transition hover:bg-red-50 hover:text-red-500"
         >
           <Trash2 size={16} />
         </button>
@@ -84,7 +84,7 @@ function CartItemRow({ item }: { item: CartItem }) {
               }
             }}
             disabled={addToCart.isPending}
-            className="flex h-8 w-8 items-center justify-center text-gray-500 transition hover:text-dark"
+            className="cursor-pointer flex h-8 w-8 items-center justify-center text-gray-500 transition hover:text-dark"
           >
             <Minus size={14} />
           </button>
@@ -96,7 +96,7 @@ function CartItemRow({ item }: { item: CartItem }) {
               addToCart.mutate({ productId: product._id, quantity: 1 })
             }
             disabled={addToCart.isPending || item.quantity >= product.countInStock}
-            className="flex h-8 w-8 items-center justify-center text-gray-500 transition hover:text-dark disabled:opacity-40"
+            className="cursor-pointer flex h-8 w-8 items-center justify-center text-gray-500 transition hover:text-dark disabled:opacity-40"
           >
             <Plus size={14} />
           </button>
@@ -168,7 +168,7 @@ export default function CartPage() {
       {/* Header */}
       <button
         onClick={() => router.back()}
-        className="mb-6 flex items-center gap-1 text-sm text-gray-400 transition hover:text-primary"
+        className="cursor-pointer mb-6 flex items-center gap-1 text-sm text-gray-400 transition hover:text-primary"
       >
         <ArrowLeft size={16} />
         Continue Shopping
@@ -215,7 +215,7 @@ export default function CartPage() {
               </div>
             </div>
 
-            <button className="mt-5 w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-primary-dark hover:shadow-md">
+            <button className="cursor-pointer mt-5 w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-primary-dark hover:shadow-md">
               Proceed to Checkout
             </button>
           </div>

@@ -23,32 +23,9 @@ import { useAddToCart } from "@/hooks/use-cart";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/store";
 import type { Review } from "@/types";
+import StarRating from "@/components/ui/star-rating";
+import { formatPrice } from "@/lib/format-price";
 
-/* ── helpers ── */
-const formatPrice = (n: number) =>
-  new Intl.NumberFormat("en-AE", {
-    style: "currency",
-    currency: "AED",
-    maximumFractionDigits: 0,
-  }).format(n);
-
-function StarRating({ rating, size = 14 }: { rating: number; size?: number }) {
-  return (
-    <div className="flex items-center gap-0.5">
-      {[1, 2, 3, 4, 5].map((i) => (
-        <Star
-          key={i}
-          size={size}
-          className={
-            i <= Math.round(rating)
-              ? "fill-yellow-400 text-yellow-400"
-              : "fill-gray-200 text-gray-200"
-          }
-        />
-      ))}
-    </div>
-  );
-}
 
 /* ── Review card ── */
 function ReviewCard({ review }: { review: Review }) {
@@ -111,7 +88,7 @@ export default function ProductDetailPage() {
         <p className="text-lg font-semibold text-gray-500">Product not found</p>
         <button
           onClick={() => router.push("/products")}
-          className="mt-4 rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white hover:bg-primary-dark"
+          className="cursor-pointer mt-4 rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white hover:bg-primary-dark"
         >
           Browse Products
         </button>
@@ -132,7 +109,7 @@ export default function ProductDetailPage() {
       {/* Breadcrumb */}
       <button
         onClick={() => router.back()}
-        className="mb-6 flex items-center gap-1 text-sm text-gray-400 transition hover:text-primary"
+        className="cursor-pointer mb-6 flex items-center gap-1 text-sm text-gray-400 transition hover:text-primary"
       >
         <ChevronLeft size={16} />
         Back to products
@@ -148,7 +125,7 @@ export default function ProductDetailPage() {
                 <button
                   key={img.public_id}
                   onClick={() => setSelectedImage(idx)}
-                  className={`h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 transition ${
+                  className={`cursor-pointer h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 transition ${
                     selectedImage === idx
                       ? "border-primary shadow-md"
                       : "border-gray-100 hover:border-gray-300"
@@ -290,7 +267,7 @@ export default function ProductDetailPage() {
               <div className="flex items-center gap-1 rounded-lg border border-gray-200">
                 <button
                   onClick={() => setQty(Math.max(1, qty - 1))}
-                  className="flex h-9 w-9 items-center justify-center text-gray-500 transition hover:text-dark"
+                  className="cursor-pointer flex h-9 w-9 items-center justify-center text-gray-500 transition hover:text-dark"
                 >
                   <Minus size={16} />
                 </button>
@@ -301,7 +278,7 @@ export default function ProductDetailPage() {
                   onClick={() =>
                     setQty(Math.min(product.countInStock, qty + 1))
                   }
-                  className="flex h-9 w-9 items-center justify-center text-gray-500 transition hover:text-dark"
+                  className="cursor-pointer flex h-9 w-9 items-center justify-center text-gray-500 transition hover:text-dark"
                 >
                   <Plus size={16} />
                 </button>
@@ -320,12 +297,12 @@ export default function ProductDetailPage() {
                 }
                 addToCart.mutate({ productId: product._id, quantity: qty });
               }}
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-primary-dark hover:shadow-md disabled:opacity-50"
+              className="cursor-pointer flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-primary-dark hover:shadow-md disabled:opacity-50"
             >
               <ShoppingCart size={18} />
               {addToCart.isPending ? "Adding..." : "Add to Cart"}
             </button>
-            <button className="flex h-12.5 w-12.5 items-center justify-center rounded-xl border border-gray-200 text-gray-400 transition hover:border-red-200 hover:text-red-500">
+            <button className="cursor-pointer flex h-12.5 w-12.5 items-center justify-center rounded-xl border border-gray-200 text-gray-400 transition hover:border-red-200 hover:text-red-500">
               <Heart size={20} />
             </button>
           </div>
