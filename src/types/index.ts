@@ -113,3 +113,19 @@ export interface CartRemoveResponse {
   cart?: Cart;
   message?: string;
 }
+
+/* ── Banner ── */
+
+export interface Banner {
+  _id: string;
+  name: string;
+  image: { url: string; public_id: string };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BannersResponse {
+  success: boolean;
+  totalBanners: number;
+  banners: Banner[];
+}
