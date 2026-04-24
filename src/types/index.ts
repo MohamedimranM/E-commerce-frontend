@@ -188,5 +188,9 @@ export interface OrdersResponse {
 
 export interface PlaceOrderPayload {
   shippingAddress: ShippingAddress;
-  paymentMethod: "COD";
+  paymentMethod: "COD" | "Card";
+  orderItems?: OrderItem[];
+  itemsPrice?: number;
+  shippingPrice?: number;
+  totalPrice?: number;
 }

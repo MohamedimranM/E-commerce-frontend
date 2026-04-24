@@ -18,6 +18,9 @@ import { useSelector } from "react-redux";
 import type { RootState } from "@/store";
 import { useGetCart } from "@/hooks/use-cart";
 import { usePlaceOrder } from "@/hooks/use-orders";
+import { createCheckoutSession } from "@/services/payment.service";
+import { placeOrderService } from "@/services/order.service";
+import { loadStripe } from "@stripe/stripe-js";
 import type { ShippingAddress } from "@/types";
 import { formatPrice } from "@/lib/format-price";
 
@@ -39,6 +42,7 @@ export default function CheckoutPage() {
 
   const [shipping, setShipping] = useState<ShippingAddress>(emptyAddress);
   const [errors, setErrors] = useState<Partial<Record<keyof ShippingAddress, string>>>({});
+  const [paymentMethod, setPaymentMethod] = useState<'COD' | 'STRIPE'>('COD');
 
   const cartItems = cartData?.cart?.products ?? [];
   const subtotal = cartItems.reduce(
@@ -68,12 +72,52 @@ export default function CheckoutPage() {
     return Object.keys(newErrors).length === 0;
   };
 
+
   const handlePlaceOrder = () => {
     if (!validate()) return;
     placeOrder.mutate({
       shippingAddress: shipping,
       paymentMethod: "COD",
     });
+  };
+
+  const handleStripeCheckout = async () => {
+    if (!validate()) return;
+    // Prepare order payload
+    const orderPayload = {
+      shippingAddress: shipping,
+      paymentMethod: "Card",
+      orderItems: cartItems.map((item) => ({
+        product: item.product._id,
+        name: item.product.name,
+        image: item.product.images?.[0]?.url || "",
+        price: item.product.price,
+        quantity: item.quantity,
+        _id: item._id,
+      })),
+      itemsPrice: subtotal,
+      shippingPrice: shippingCost,
+      totalPrice: total,
+    };
+    try {
+      // 1. Create order in backend
+      const orderRes = await placeOrderService(orderPayload);
+      const orderId = orderRes.order._id;
+      // 2. Prepare Stripe items
+      const items = cartItems.map((item) => ({
+        name: item.product.name,
+        amount: Math.round(item.product.price * 100), // cents
+        quantity: item.quantity,
+      }));
+      const customerEmail = (typeof window !== 'undefined' && localStorage.getItem('userEmail')) || undefined;
+      // 3. Create Stripe checkout session with orderId
+      const { url } = await createCheckoutSession(items, customerEmail, orderId);
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (err) {
+      console.error("Stripe checkout error:", err);
+    }
   };
 
   if (!isAuthenticated) {
@@ -291,19 +335,37 @@ export default function CheckoutPage() {
               </div>
               <h2 className="text-base font-bold text-dark">Payment Method</h2>
             </div>
-
-            <div className="flex items-center gap-3 rounded-lg border-2 border-primary bg-primary/5 p-4">
-              <div className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-primary">
-                <div className="h-2.5 w-2.5 rounded-full bg-primary" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-dark">
-                  Cash on Delivery (COD)
-                </p>
-                <p className="text-xs text-gray-500">
-                  Pay when your order is delivered
-                </p>
-              </div>
+            <div className="flex flex-col gap-3">
+              <label className="flex items-center gap-3 cursor-pointer rounded-lg border-2 p-4 transition-all"
+                style={{ borderColor: paymentMethod === 'COD' ? '#6366f1' : '#e5e7eb', background: paymentMethod === 'COD' ? 'rgba(99,102,241,0.05)' : '#fff' }}>
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="COD"
+                  checked={paymentMethod === 'COD'}
+                  onChange={() => setPaymentMethod('COD')}
+                  className="accent-primary h-4 w-4"
+                />
+                <div>
+                  <p className="text-sm font-semibold text-dark">Cash on Delivery (COD)</p>
+                  <p className="text-xs text-gray-500">Pay when your order is delivered</p>
+                </div>
+              </label>
+              <label className="flex items-center gap-3 cursor-pointer rounded-lg border-2 p-4 transition-all"
+                style={{ borderColor: paymentMethod === 'STRIPE' ? '#6366f1' : '#e5e7eb', background: paymentMethod === 'STRIPE' ? 'rgba(99,102,241,0.05)' : '#fff' }}>
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="STRIPE"
+                  checked={paymentMethod === 'STRIPE'}
+                  onChange={() => setPaymentMethod('STRIPE')}
+                  className="accent-primary h-4 w-4"
+                />
+                <div>
+                  <p className="text-sm font-semibold text-dark">Pay Now (Card/Stripe)</p>
+                  <p className="text-xs text-gray-500">Pay securely with your card</p>
+                </div>
+              </label>
             </div>
           </div>
         </div>
@@ -380,20 +442,31 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              <button
-                onClick={handlePlaceOrder}
-                disabled={placeOrder.isPending}
-                className="cursor-pointer mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-primary-dark hover:shadow-md disabled:opacity-60"
-              >
-                {placeOrder.isPending ? (
-                  <>
-                    <Loader2 size={18} className="animate-spin" />
-                    Placing Order...
-                  </>
-                ) : (
-                  "Place Order"
-                )}
-              </button>
+
+
+              {paymentMethod === 'COD' ? (
+                <button
+                  onClick={handlePlaceOrder}
+                  disabled={placeOrder.isPending}
+                  className="cursor-pointer mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-primary-dark hover:shadow-md disabled:opacity-60"
+                >
+                  {placeOrder.isPending ? (
+                    <>
+                      <Loader2 size={18} className="animate-spin" />
+                      Placing Order...
+                    </>
+                  ) : (
+                    "Place Order (COD)"
+                  )}
+                </button>
+              ) : (
+                <button
+                  onClick={handleStripeCheckout}
+                  className="cursor-pointer mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-accent-dark hover:shadow-md"
+                >
+                  Pay Now (Card/Stripe)
+                </button>
+              )}
 
               {/* Trust badges */}
               <div className="mt-4 flex items-center justify-center gap-4 text-xs text-gray-400">

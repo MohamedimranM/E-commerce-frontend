@@ -5,15 +5,28 @@ import Link from "next/link";
 import { CheckCircle2, Package, ArrowRight, Loader2 } from "lucide-react";
 import { useGetOrderById } from "@/hooks/use-orders";
 import { formatPrice } from "@/lib/format-price";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { getStripeSession } from "@/services/stripe.service";
 
 function SuccessContent() {
   const searchParams = useSearchParams();
-  const orderId = searchParams.get("orderId") ?? "";
+  const [orderId, setOrderId] = useState("");
+  const sessionId = searchParams.get("session_id");
+  const urlOrderId = searchParams.get("orderId");
   const { data, isLoading } = useGetOrderById(orderId);
   const order = data?.order;
 
-  if (isLoading) {
+  useEffect(() => {
+    if (urlOrderId) {
+      setOrderId(urlOrderId);
+    } else if (sessionId) {
+      getStripeSession(sessionId).then((res) => {
+        if (res?.orderId) setOrderId(res.orderId);
+      });
+    }
+  }, [sessionId, urlOrderId]);
+
+  if (!orderId || isLoading) {
     return (
       <div className="flex h-[60vh] items-center justify-center">
         <Loader2 size={40} className="animate-spin text-primary" />
