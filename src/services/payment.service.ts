@@ -2,7 +2,7 @@ import axios from '../lib/axios';
 
 export const createCheckoutSession = async (
   items: any[],
-  customerEmail: string,
+  customerEmail: any,
   orderId: string
 ): Promise<any> => {
   return await axios(

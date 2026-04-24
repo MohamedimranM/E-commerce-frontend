@@ -20,7 +20,6 @@ import { useGetCart } from "@/hooks/use-cart";
 import { usePlaceOrder } from "@/hooks/use-orders";
 import { createCheckoutSession } from "@/services/payment.service";
 import { placeOrderService } from "@/services/order.service";
-import { loadStripe } from "@stripe/stripe-js";
 import type { ShippingAddress } from "@/types";
 import { formatPrice } from "@/lib/format-price";
 
@@ -39,10 +38,11 @@ export default function CheckoutPage() {
   const isAuthenticated = useSelector((s: RootState) => s.auth.isAuthenticated);
   const { data: cartData, isLoading: cartLoading } = useGetCart();
   const placeOrder = usePlaceOrder();
+  const [stripeLoading, setStripeLoading] = useState(false);
 
   const [shipping, setShipping] = useState<ShippingAddress>(emptyAddress);
   const [errors, setErrors] = useState<Partial<Record<keyof ShippingAddress, string>>>({});
-  const [paymentMethod, setPaymentMethod] = useState<'COD' | 'STRIPE'>('COD');
+  const [paymentMethod, setPaymentMethod] = useState<'COD' | 'Card'>('COD');
 
   const cartItems = cartData?.cart?.products ?? [];
   const subtotal = cartItems.reduce(
@@ -83,8 +83,8 @@ export default function CheckoutPage() {
 
   const handleStripeCheckout = async () => {
     if (!validate()) return;
-    // Prepare order payload
-    const orderPayload = {
+    setStripeLoading(true);
+    const orderPayload: import("@/types").PlaceOrderPayload = {
       shippingAddress: shipping,
       paymentMethod: "Card",
       orderItems: cartItems.map((item) => ({
@@ -109,14 +109,16 @@ export default function CheckoutPage() {
         amount: Math.round(item.product.price * 100), // cents
         quantity: item.quantity,
       }));
-      const customerEmail = (typeof window !== 'undefined' && localStorage.getItem('userEmail')) || undefined;
-      // 3. Create Stripe checkout session with orderId
-      const { url } = await createCheckoutSession(items, customerEmail, orderId);
+    const customerEmail = (typeof window !== 'undefined' && localStorage.getItem('userEmail')) || undefined;
+    // 3. Create Stripe checkout session with orderId
+    const { url } = await createCheckoutSession(items, customerEmail, orderId);
       if (url) {
         window.location.href = url;
       }
     } catch (err) {
       console.error("Stripe checkout error:", err);
+    } finally {
+      setStripeLoading(false);
     }
   };
 
@@ -352,13 +354,13 @@ export default function CheckoutPage() {
                 </div>
               </label>
               <label className="flex items-center gap-3 cursor-pointer rounded-lg border-2 p-4 transition-all"
-                style={{ borderColor: paymentMethod === 'STRIPE' ? '#6366f1' : '#e5e7eb', background: paymentMethod === 'STRIPE' ? 'rgba(99,102,241,0.05)' : '#fff' }}>
+                style={{ borderColor: paymentMethod === 'Card' ? '#6366f1' : '#e5e7eb', background: paymentMethod === 'Card' ? 'rgba(99,102,241,0.05)' : '#fff' }}>
                 <input
                   type="radio"
                   name="paymentMethod"
-                  value="STRIPE"
-                  checked={paymentMethod === 'STRIPE'}
-                  onChange={() => setPaymentMethod('STRIPE')}
+                  value="Card"
+                  checked={paymentMethod === 'Card'}
+                  onChange={() => setPaymentMethod('Card')}
                   className="accent-primary h-4 w-4"
                 />
                 <div>
@@ -462,9 +464,17 @@ export default function CheckoutPage() {
               ) : (
                 <button
                   onClick={handleStripeCheckout}
-                  className="cursor-pointer mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-accent-dark hover:shadow-md"
+                  disabled={stripeLoading}
+                  className="cursor-pointer mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-accent-dark hover:shadow-md disabled:opacity-60"
                 >
-                  Pay Now (Card/Stripe)
+                  {stripeLoading ? (
+                    <>
+                      <Loader2 size={18} className="animate-spin" />
+                      Processing Payment...
+                    </>
+                  ) : (
+                    "Pay Now (Card/Stripe)"
+                  )}
                 </button>
               )}
 

@@ -1,3 +1,8 @@
+// Stripe session response type
+export interface StripeSessionResponse {
+  orderId: string;
+  // Add other fields if needed
+}
 export interface User {
   id: string;
   _id?: string;
